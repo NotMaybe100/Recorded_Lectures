@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FIITJEE Recorded Lectures</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #f6f6f8;
+      --text-dark: #222;
+      --card-dark: #fff;
+      --primary: #007aff;
+      --on-primary: #fff;
+      --shadow: 0 8px 24px rgba(0,0,0,0.08);
+    }
+    body {
+      font-family: 'SF Pro Display', 'Roboto', Arial, sans-serif;
+      margin: 0;
+      padding: 2rem;
+      background: var(--bg-dark);
+      color: var(--text-dark);
+      transition: all 0.3s ease;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 2rem;
+      font-weight: 700;
+      font-size: 2.2rem;
+      letter-spacing: -0.5px;
+    }
+    details {
+      margin-bottom: 1rem;
+      background: var(--card-dark);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 1.2rem;
+      transition: background 0.3s;
+      border: none;
+    }
+    summary {
+      font-size: 1.25rem;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 0.5rem 0;
+      color: var(--primary);
+      outline: none;
+    }
+    .video-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      margin-top: 1rem;
+    }
+    .video-card {
+      display: flex;
+      gap: 1.2rem;
+      align-items: center;
+      cursor: pointer;
+      background: linear-gradient(90deg, #f8f8fa 60%, #e9e9ee 100%);
+      border-radius: 16px;
+      padding: 0.8rem 1rem;
+      position: relative;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      transition: box-shadow 0.2s;
+    }
+    .video-card:hover {
+      box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+    }
+    .video-card img {
+      width: 120px;
+      height: 68px;
+      object-fit: cover;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    }
+    .video-info h4 {
+      margin: 0;
+      font-size: 1.08rem;
+      font-weight: 600;
+      color: #222;
+      letter-spacing: -0.2px;
+    }
+    .video-info .youtube-link {
+      margin-top: 0.35rem;
+      display: inline-block;
+    }
+    .youtube-link img {
+      width: 22px;
+      height: 22px;
+      vertical-align: middle;
+    }
+    .video-card.watched {
+      opacity: 0.6;
+      background: linear-gradient(90deg, #e0e0e5 60%, #f8f8fa 100%);
+      position: relative;
+    }
+    .video-card.watched::after {
+      content: "✓";
+      position: absolute;
+      top: 50%;
+      left: 24px;
+      transform: translate(-50%, -50%);
+      color: var(--primary);
+      font-weight: bold;
+      font-size: 1.5rem;
+      background: rgba(255,255,255,0.7);
+      border-radius: 50%;
+      padding: 6px 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .unwatch-btn {
+      margin-left: auto;
+      background: rgba(0,122,255,0.08);
+      color: var(--primary);
+      border: none;
+      border-radius: 12px;
+      padding: 6px 16px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .unwatch-btn:hover {
+      background: rgba(0,122,255,0.18);
+    }
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      backdrop-filter: blur(16px) brightness(0.9);
+      background: rgba(255,255,255,0.3);
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      padding: 1rem;
+      transition: backdrop-filter 0.3s;
+    }
+    .overlay.active {
+      display: flex;
+    }
+    .overlay iframe {
+      width: 100%;
+      max-width: 1200px;
+      height: 80vh;
+      border: none;
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      background: #fff;
+    }
+    .close-btn {
+      position: absolute;
+      top: 32px;
+      right: 60px;
+      font-size: 2.7rem;
+      color: var(--primary);
+      cursor: pointer;
+      font-weight: bold;
+      background: #fff;
+      border-radius: 50%;
+      padding: 0 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+      transition: background 0.2s;
+    }
+    .close-btn:hover {
+      background: #f2f2f7;
+    }
+    .playlist-link {
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+    .playlist-link img {
+      width: 22px;
+      height: 22px;
+      filter: drop-shadow(0 1px 2px rgba(0,0,0,0.10));
+    }
+    body.dark {
+      --bg-dark: #18181a;
+      --text-dark: #f6f6f8;
+      --card-dark: #232326;
+      --primary: #0a84ff;
+      --shadow: 0 8px 24px rgba(0,0,0,0.32);
+    }
+    body.dark h1 { color: #fff; }
+    body.dark details { background: var(--card-dark); }
+    body.dark .video-card { background: linear-gradient(90deg, #232326 60%, #18181a 100%); color: #f6f6f8; }
+    body.dark .video-card.watched { background: linear-gradient(90deg, #232326 60%, #232326 100%); }
+    body.dark .unwatch-btn { background: rgba(10,132,255,0.10); color: #0a84ff; }
+    body.dark .unwatch-btn:hover { background: rgba(10,132,255,0.22); }
+    body.dark .overlay { background: rgba(30,30,32,0.6); }
+    body.dark .close-btn { background: #232326; color: #0a84ff; }
+    body.dark .close-btn:hover { background: #18181a; }
+    body.dark .playlist-link img { filter: brightness(1.2); }
+    body.dark .video-info h4 { color: #f6f6f8; }
+  </style>
+</head>
+<body>
+  <h1>FIITJEE Recorded Lectures</h1>
+  <div id="subjects"></div>
+
+  <div class="overlay" id="videoOverlay">
+    <span class="close-btn" onclick="closeOverlay()">&times;</span>
+    <iframe id="overlayIframe" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+  </div>
+
+  <div style="position:absolute;top:2rem;right:2rem;z-index:10;">
+    <label for="themeSelect" style="font-weight:500;margin-right:8px;">Theme:</label>
+    <select id="themeSelect" class="unwatch-btn" style="min-width:120px;">
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+      <option value="system">Match System</option>
+    </select>
+  </div>
+
+  <script>
+    const apiKey = "AIzaSyCy0iQftfyIRFULciv6oAtiAd7oNFebNJ0";
+
+    const subjects = {
+      "Physics": [
+        { title: "Magnetism", id: "PLxjJBGKP9mSNNGp7y2KVIHihjsRio1At0" },
+        { title: "Electromagnetic Induction (EMI)", id: "PLxjJBGKP9mSPp0XlzmThJleCKrN1zDawe" },
+      ],
+      "Chemistry": [
+        { title: "Hydrocarbons", id: "PLxjJBGKP9mSOUsw4VjuJphXXAq8kUMBDs" },
+        { title: "Alcohols, Ethers and Phenol", id: "PLxjJBGKP9mSNB_nVbMNSReoAIotLZVGNG" },
+        { title: "Carbonyls", id: "PLxjJBGKP9mSNK9E_a8xp3yMUz9Og3mZz7" },
+        { title: "Carboxylic Acid and Derivatives", id: "PLxjJBGKP9mSO3lRo_8dYkvU_0KALpKHJc" },
+        { title: "Amines", id: "PLxjJBGKP9mSMkg0oh7e6zwaDGrl0Qat-e" },
+        { title: "Polymers", id: "PLxjJBGKP9mSNOL__mMk0BZp0MPBZv3MW1" },
+        { title: "Practical Organic Chemistry (POC)", id: "PLxjJBGKP9mSNRDNxqE2H9AI0MrWKABMoK" },
+      ]
+    };
+
+    const container = document.getElementById("subjects");
+
+    for (const subject in subjects) {
+      const subjectDetails = document.createElement("details");
+      subjectDetails.innerHTML = `<summary>${subject}</summary>`;
+
+      subjects[subject].forEach(playlist => {
+        const topicDetails = document.createElement("details");
+        const playlistUrl = `https://www.youtube.com/playlist?list=${playlist.id}`;
+        topicDetails.innerHTML = `<summary>${playlist.title} <a class="playlist-link" href="${playlistUrl}" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg" alt="YouTube"></a></summary><div class="video-list" id="${playlist.id}">Loading...</div>`;
+        subjectDetails.appendChild(topicDetails);
+
+        fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${playlist.id}&key=${apiKey}`)
+          .then(res => res.json())
+          .then(data => {
+            const list = document.getElementById(playlist.id);
+            list.innerHTML = "";
+            const history = JSON.parse(localStorage.getItem("watchHistory") || "[]");
+
+            (data.items || []).forEach(item => {
+              const videoId = item.snippet?.resourceId?.videoId;
+              const title = item.snippet?.title;
+              const thumb = item.snippet?.thumbnails?.default?.url;
+              if (!videoId || !title || !thumb) return;
+
+              const videoCard = document.createElement("div");
+              videoCard.className = "video-card";
+              videoCard.dataset.id = videoId;
+
+              // Thumbnail
+              const img = document.createElement("img");
+              img.src = thumb;
+              img.alt = "Thumbnail";
+
+              // Info
+              const infoDiv = document.createElement("div");
+              infoDiv.className = "video-info";
+              const h4 = document.createElement("h4");
+              h4.textContent = title;
+              const ytLink = document.createElement("a");
+              ytLink.className = "youtube-link";
+              ytLink.href = `https://www.youtube.com/watch?v=${videoId}`;
+              ytLink.target = "_blank";
+              const ytImg = document.createElement("img");
+              ytImg.src = "https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg";
+              ytImg.alt = "YouTube";
+              ytLink.appendChild(ytImg);
+              infoDiv.appendChild(h4);
+              infoDiv.appendChild(ytLink);
+
+              videoCard.appendChild(img);
+              videoCard.appendChild(infoDiv);
+
+              // Create both buttons
+              const watchBtn = document.createElement("button");
+              watchBtn.className = "unwatch-btn";
+              watchBtn.textContent = "Mark Watched";
+
+              const unwatchBtn = document.createElement("button");
+              unwatchBtn.className = "unwatch-btn";
+              unwatchBtn.textContent = "Mark Unwatched";
+
+              // Button logic
+              watchBtn.onclick = (e) => {
+                e.stopPropagation();
+                let history = JSON.parse(localStorage.getItem("watchHistory") || "[]");
+                if (!history.includes(videoId)) {
+                  history.push(videoId);
+                  localStorage.setItem("watchHistory", JSON.stringify(history));
+                }
+                videoCard.classList.add("watched");
+                watchBtn.style.display = "none";
+                unwatchBtn.style.display = "";
+              };
+
+              unwatchBtn.onclick = (e) => {
+                e.stopPropagation();
+                let history = JSON.parse(localStorage.getItem("watchHistory") || "[]");
+                history = history.filter(id => id !== videoId);
+                localStorage.setItem("watchHistory", JSON.stringify(history));
+                videoCard.classList.remove("watched");
+                unwatchBtn.style.display = "none";
+                watchBtn.style.display = "";
+              };
+
+              // Initial state
+              if (history.includes(videoId)) {
+                videoCard.classList.add("watched");
+                watchBtn.style.display = "none";
+                unwatchBtn.style.display = "";
+              } else {
+                watchBtn.style.display = "";
+                unwatchBtn.style.display = "none";
+              }
+
+              videoCard.appendChild(watchBtn);
+              videoCard.appendChild(unwatchBtn);
+
+              videoCard.onclick = () => openOverlay(videoId);
+
+              list.appendChild(videoCard);
+            });
+          })
+          .catch(err => {
+            const list = document.getElementById(playlist.id);
+            list.innerHTML = `<p style="color:red;">Failed to load videos: ${err.message}</p>`;
+          });
+      });
+
+      container.appendChild(subjectDetails);
+    }
+
+    function openOverlay(videoId) {
+      const overlay = document.getElementById("videoOverlay");
+      const iframe = document.getElementById("overlayIframe");
+      iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&autoplay=1`;
+      overlay.classList.add("active");
+
+      let history = JSON.parse(localStorage.getItem("watchHistory") || "[]");
+      if (!history.includes(videoId)) {
+        history.push(videoId);
+        localStorage.setItem("watchHistory", JSON.stringify(history));
+      }
+
+      document.querySelectorAll(`.video-card`).forEach(card => {
+        if (card.dataset.id === videoId) {
+          card.classList.add("watched");
+          const watchBtn = card.querySelector("button.unwatch-btn:nth-of-type(1)");
+          const unwatchBtn = card.querySelector("button.unwatch-btn:nth-of-type(2)");
+          if (watchBtn && unwatchBtn) {
+            watchBtn.style.display = "none";
+            unwatchBtn.style.display = "";
+          }
+        }
+      });
+    }
+
+    function closeOverlay() {
+      const overlay = document.getElementById("videoOverlay");
+      const iframe = document.getElementById("overlayIframe");
+      iframe.src = "";
+      overlay.classList.remove("active");
+    }
+
+    function applyTheme(theme) {
+      document.body.classList.remove("dark", "light");
+      if (theme === "dark") document.body.classList.add("dark");
+      else document.body.classList.add("light");
+    }
+
+    function getSystemTheme() {
+      return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+
+    function setTheme(theme, remember = true) {
+      applyTheme(theme);
+      if (remember) localStorage.setItem("theme", theme);
+    }
+
+    function setMatchSystem(match) {
+      localStorage.setItem("matchSystem", match ? "1" : "0");
+    }
+
+    const savedTheme = localStorage.getItem("theme");
+    const matchSystem = localStorage.getItem("matchSystem") === "1";
+    if (matchSystem) {
+      setTheme(getSystemTheme(), false);
+    } else if (savedTheme) {
+      setTheme(savedTheme, false);
+    } else {
+      setTheme(getSystemTheme(), false);
+    }
+
+    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", e => {
+      if (localStorage.getItem("matchSystem") === "1") {
+        setTheme(e.matches ? "dark" : "light", false);
+      }
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const themeSelect = document.getElementById("themeSelect");
+      if (matchSystem) themeSelect.value = "system";
+      else themeSelect.value = savedTheme || "system";
+
+      themeSelect.onchange = () => {
+        if (themeSelect.value === "system") {
+          setMatchSystem(true);
+          setTheme(getSystemTheme(), false);
+        } else {
+          setMatchSystem(false);
+          setTheme(themeSelect.value);
+        }
+      };
+    });
+  </script>
+</body>
+</html>
